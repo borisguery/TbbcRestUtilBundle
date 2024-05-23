@@ -9,6 +9,7 @@
 
 namespace Tbbc\RestUtilBundle\Error\Factory;
 
+use Exception;
 use Tbbc\RestUtil\Error\Error;
 use Tbbc\RestUtil\Error\ErrorFactoryInterface;
 use Tbbc\RestUtil\Error\ErrorInterface;
@@ -20,18 +21,12 @@ use Tbbc\RestUtilBundle\Error\Exception\FormErrorException;
  */
 class FormErrorFactory implements ErrorFactoryInterface
 {
-    /**
-     * {@inheritDoc}
-     */
     public function getIdentifier(): string
     {
         return 'tbbc_rest_util_form_error';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createError(\Exception $exception, ExceptionMappingInterface $mapping): ?ErrorInterface
+    public function createError(Exception $exception, ExceptionMappingInterface $mapping): ?ErrorInterface
     {
         if (!$this->supportsException($exception)) {
             return null;
@@ -43,19 +38,16 @@ class FormErrorFactory implements ErrorFactoryInterface
         }
 
         $formErrors = $exception->getFormErrors();
-        $extendedMessage = array(
+        $extendedMessage = [
             'global_errors' => $formErrors['form_errors'],
             'property_errors' => $formErrors['field_errors'],
-        );
+        ];
 
         return new Error($mapping->getHttpStatusCode(), $mapping->getErrorCode(), $errorMessage,
             $extendedMessage, $mapping->getErrorMoreInfoUrl());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function supportsException(\Exception $exception): bool
+    public function supportsException(Exception $exception): bool
     {
         return $exception instanceof FormErrorException;
     }

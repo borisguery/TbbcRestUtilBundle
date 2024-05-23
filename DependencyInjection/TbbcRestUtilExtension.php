@@ -58,7 +58,7 @@ class TbbcRestUtilExtension extends Extension
         $exceptionMapDefinition = $container->getDefinition('tbbc_rest_util.error.mapping.exception_map');
         $exceptionMappingClass = $container->getParameter('tbbc_rest_util.error.mapping.exception_mapping.class');
         foreach($config['error']['exception_mapping'] as $mappingConfig) {
-            $mappingDefinition = new Definition($exceptionMappingClass, array(array(
+            $mappingDefinition = new Definition($exceptionMappingClass, [[
                 'exceptionClassName' => $mappingConfig['class'],
                 'factory' => 'default' == $mappingConfig['factory'] ? '__DEFAULT__' : $mappingConfig['factory'],
                 'httpStatusCode' => $mappingConfig['http_status_code'],
@@ -66,9 +66,9 @@ class TbbcRestUtilExtension extends Extension
                 'errorMessage' => isset($mappingConfig['error_message']) ? $mappingConfig['error_message'] : null,
                 'errorExtendedMessage' => isset($mappingConfig['error_extended_message']) ? $mappingConfig['error_extended_message'] : null,
                 'errorMoreInfoUrl' => isset($mappingConfig['error_more_info_url']) ? $mappingConfig['error_more_info_url'] : null,
-            )));
+            ]]);
 
-            $exceptionMapDefinition->addMethodCall('add', array($mappingDefinition));
+            $exceptionMapDefinition->addMethodCall('add', [$mappingDefinition]);
         }
     }
 }

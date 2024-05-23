@@ -9,7 +9,10 @@
 
 namespace Tbbc\RestUtilBundle\Tests\DependencyInjection\Compiler;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Tbbc\RestUtil\Error\DefaultErrorFactory;
 use Tbbc\RestUtil\Error\Error;
 use Tbbc\RestUtil\Error\ErrorFactoryInterface;
@@ -18,10 +21,8 @@ use Tbbc\RestUtil\Error\ErrorResolver;
 use Tbbc\RestUtil\Error\Mapping\ExceptionMap;
 use Tbbc\RestUtil\Error\Mapping\ExceptionMapping;
 use Tbbc\RestUtil\Error\Mapping\ExceptionMappingInterface;
-use Tbbc\RestUtilBundle\TbbcRestUtilBundle;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Tbbc\RestUtilBundle\DependencyInjection\TbbcRestUtilExtension;
-use Symfony\Component\DependencyInjection\Definition;
+use Tbbc\RestUtilBundle\TbbcRestUtilBundle;
 
 /**
  * @author Benjamin Dulau <benjamin.dulau@gmail.com>
@@ -63,7 +64,7 @@ class ErrorFactoryCompilerPassTest extends TestCase
         $customErrorFactoryDefinition = new Definition(
             '\Tbbc\RestUtilBundle\Tests\DependencyInjection\Compiler\CustomErrorFactory');
         $customErrorFactoryDefinition->addTag('tbbc_rest_util.error_factory');
-        $this->container->addDefinitions(array($customErrorFactoryDefinition));
+        $this->container->addDefinitions([$customErrorFactoryDefinition]);
 
         $this->container->compile();
 
@@ -77,7 +78,7 @@ class ErrorFactoryCompilerPassTest extends TestCase
     }
 
     /**
-     * Returns ExceptionMap corresponding to the getConfig() result
+     * Returns ExceptionMap corresponding to the getConfig() result.
      *
      * @return ExceptionMap
      */
@@ -85,7 +86,7 @@ class ErrorFactoryCompilerPassTest extends TestCase
     {
         $exceptionMap = new ExceptionMap();
         $exceptionMap
-            ->add(new ExceptionMapping(array(
+            ->add(new ExceptionMapping([
                 'exceptionClassName' => '\RuntimeException',
                 'factory' => '__DEFAULT__',
                 'httpStatusCode' => 500,
@@ -93,18 +94,18 @@ class ErrorFactoryCompilerPassTest extends TestCase
                 'errorMessage' => 'Server error',
                 'errorExtendedMessage' => 'Extended message',
                 'errorMoreInfoUrl' => 'http://api.my.tld/doc/error/500123',
-            )))
+            ]))
         ;
 
-        $exceptionMap->add(new ExceptionMapping(array(
-                'exceptionClassName' => 'My\CustomException',
-                'factory' => 'custom',
-                'httpStatusCode' => 400,
-                'errorCode' => 400110,
-                'errorMessage' => 'Validation failed',
-                'errorExtendedMessage' => 'Extended message',
-                'errorMoreInfoUrl' => 'http://api.my.tld/doc/error/400110',
-            )))
+        $exceptionMap->add(new ExceptionMapping([
+            'exceptionClassName' => 'My\CustomException',
+            'factory' => 'custom',
+            'httpStatusCode' => 400,
+            'errorCode' => 400110,
+            'errorMessage' => 'Validation failed',
+            'errorExtendedMessage' => 'Extended message',
+            'errorMoreInfoUrl' => 'http://api.my.tld/doc/error/400110',
+        ]))
         ;
 
         return $exceptionMap;
@@ -115,12 +116,12 @@ class ErrorFactoryCompilerPassTest extends TestCase
      */
     private function getConfig()
     {
-        return array(
-            "tbbc_rest_util" => array (
-                "error" => array (
+        return [
+            'tbbc_rest_util' => [
+                'error' => [
                     'use_bundled_factories' => false,
-                    'exception_mapping' => array(
-                        'InvalidArgumentException' => array(
+                    'exception_mapping' => [
+                        'InvalidArgumentException' => [
                             'class' => '\RuntimeException',
                             'factory' => 'default',
                             'http_status_code' => 500,
@@ -128,8 +129,8 @@ class ErrorFactoryCompilerPassTest extends TestCase
                             'error_message' => 'Server error',
                             'error_extended_message' => 'Extended message',
                             'error_more_info_url' => 'http://api.my.tld/doc/error/500123',
-                        ),
-                        'CustomException' => array(
+                        ],
+                        'CustomException' => [
                             'class' => 'My\CustomException',
                             'factory' => 'custom',
                             'http_status_code' => 400,
@@ -137,11 +138,11 @@ class ErrorFactoryCompilerPassTest extends TestCase
                             'error_message' => 'Validation failed',
                             'error_extended_message' => 'Extended message',
                             'error_more_info_url' => 'http://api.my.tld/doc/error/400110',
-                        ),
-                    ),
-                ),
-            ),
-        );
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 }
 
@@ -152,7 +153,7 @@ class CustomErrorFactory implements ErrorFactoryInterface
         return 'custom';
     }
 
-    public function createError(\Exception $exception, ExceptionMappingInterface $mapping): ?ErrorInterface
+    public function createError(Exception $exception, ExceptionMappingInterface $mapping): ?ErrorInterface
     {
         return new Error($mapping->getHttpStatusCode(), $mapping->getErrorCode(), $mapping->getErrorMessage());
     }

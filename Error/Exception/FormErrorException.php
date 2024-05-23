@@ -9,6 +9,8 @@
 
 namespace Tbbc\RestUtilBundle\Error\Exception;
 
+use Exception;
+use InvalidArgumentException;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -18,14 +20,14 @@ use Symfony\Component\Translation\TranslatorInterface;
  * @author Benjamin Dulau <benjamin.dulau@gmail.com>
  * @author Valentin Ferriere <valentin@v-labs.fr>
  */
-class FormErrorException extends \InvalidArgumentException
+class FormErrorException extends InvalidArgumentException
 {
     private $translator;
     private $formErrors;
 
-    public function __construct(FormInterface $form, TranslatorInterface $translator = null,
-                                $message = 'An error has occurred while processing your request, make sure your data are valid',
-                                $code = 400, \Exception $previous = null)
+    public function __construct(FormInterface $form, ?TranslatorInterface $translator = null,
+        $message = 'An error has occurred while processing your request, make sure your data are valid',
+        $code = 400, ?Exception $previous = null)
     {
         $this->translator = $translator;
         $this->buildErrorsTree($form);
@@ -33,22 +35,16 @@ class FormErrorException extends \InvalidArgumentException
         parent::__construct($message, $code, $previous);
     }
 
-    /**
-     * @return array
-     */
     public function getFormErrors(): array
     {
         return $this->formErrors;
     }
 
-    /**
-     * @param FormInterface $form
-     */
     private function buildErrorsTree(FormInterface $form): void
     {
-        $this->formErrors = array();
+        $this->formErrors = [];
 
-        $this->formErrors['form_errors'] = array();
+        $this->formErrors['form_errors'] = [];
         foreach ($form->getErrors() as $error) {
             /** @var $error FormError */
             $message = $error->getMessage();
@@ -59,20 +55,16 @@ class FormErrorException extends \InvalidArgumentException
             array_push($this->formErrors['form_errors'], $message);
         }
 
-        $this->formErrors['field_errors'] = array();
+        $this->formErrors['field_errors'] = [];
         $this->buildFormFieldErrorTree($form);
     }
 
-    /**
-     * @param FormInterface $form
-     */
     private function buildFormFieldErrorTree(FormInterface $form, $name = null): void
     {
-
         foreach ($form->all() as $key => $child) {
             $children = count($child->all());
 
-            if($children > 0 && !is_int($key)) {
+            if ($children > 0 && !is_int($key)) {
                 $name = $key;
             }
 
@@ -84,15 +76,15 @@ class FormErrorException extends \InvalidArgumentException
                     $message = $this->translator->trans($message, $error->getMessageParameters(), 'validators');
                 }
 
-                if($name == null) {
+                if (null == $name) {
                     $this->formErrors['field_errors'][$key][] = $message;
                 } else {
                     $this->formErrors['field_errors'][sprintf('%s-%s-%s', $name, $form->getName(), $key)][] = $message;
                 }
             }
 
-            if($children > 0) {
-                $this->buildFormFieldErrorTree($child , $name);
+            if ($children > 0) {
+                $this->buildFormFieldErrorTree($child, $name);
             }
         }
     }

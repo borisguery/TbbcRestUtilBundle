@@ -33,7 +33,7 @@ class ErrorFactoryCompilerPass implements CompilerPassInterface
             $container->getParameter('tbbc_rest_util.error_resolver_service_id')
         );
         foreach ($container->findTaggedServiceIds('tbbc_rest_util.error_factory') as $id => $attributes) {
-            $errorResolverDefinition->addMethodCall('registerFactory', array(new Reference($id)));
+            $errorResolverDefinition->addMethodCall('registerFactory', [new Reference($id)]);
         }
     }
 }
