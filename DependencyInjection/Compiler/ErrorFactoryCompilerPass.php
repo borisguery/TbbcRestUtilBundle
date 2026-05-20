@@ -23,7 +23,7 @@ class ErrorFactoryCompilerPass implements CompilerPassInterface
     /**
      * {@inheritDoc}
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (! $container->hasDefinition('tbbc_rest_util.error.error_resolver')) {
             return;

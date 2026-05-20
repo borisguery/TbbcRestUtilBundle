@@ -51,7 +51,7 @@ class Configuration implements ConfigurationInterface
      * @param ArrayNodeDefinition $node
      * @return void
      */
-    private function addErrorSection(ArrayNodeDefinition $node)
+    private function addErrorSection(ArrayNodeDefinition $node): void
     {
         $node
             ->children()

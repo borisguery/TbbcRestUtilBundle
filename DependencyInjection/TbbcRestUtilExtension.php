@@ -26,7 +26,7 @@ class TbbcRestUtilExtension extends Extension
     /**
      * {@inheritDoc}
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
         $configuration = new Configuration();
@@ -48,7 +48,7 @@ class TbbcRestUtilExtension extends Extension
         $this->configureErrorExceptionMapping($config, $container);
     }
 
-    protected function configureErrorExceptionMapping(array $config, ContainerBuilder $container)
+    protected function configureErrorExceptionMapping(array $config, ContainerBuilder $container): void
     {
         if (! isset($config['error']['exception_mapping']) || empty($config['error']['exception_mapping'])) {
             return;

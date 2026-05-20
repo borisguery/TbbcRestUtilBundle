@@ -21,7 +21,7 @@ use Symfony\Component\Form\FormInterface;
  */
 class FormErrorException extends InvalidArgumentException
 {
-    private $formErrors;
+    private array $formErrors;
 
     public function __construct(
         FormInterface $form,
